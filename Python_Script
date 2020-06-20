@@ -1,0 +1,59 @@
+# coding: utf8
+
+import vk  # Импортируем модуль vk
+import datetime
+import geocoder
+import re
+import requests
+import urllib
+from bs4 import BeautifulSoup as Bs
+
+date = {}
+
+def get_message(groupid, n):
+    mesaage = vk_api.wall.get(owner_id = groupid, v = 5.92, count = n, filter = 'others')
+    # mesaage = {'count': 32657, 'items': [{'id': 520151, 'from_id': 347644896, 'owner_id': -109125816, 'date': 1592633123, 'marked_as_ads': 0, 'post_type': 'post', 'text': 'Поделюсь шампиньонами замороженными 2 пакета. Балашиха деревня Пуршево улица Новослободская 12', 'attachments': [{'type': 'photo', 'photo': {'album_id': -8, 'date': 1592633123, 'id': 457315110, 'owner_id': -109125816, 'has_tags': False, 'access_key': '7b5451dbbf34f9af3f', 'lat': 55.723722, 'long': 38.037724, 'sizes': [{'height': 97, 'url': 'https://sun1-86.userapi.com/JQsHxMxdTWi0pBXXaYOtT-T8hY_drkR6kFIqXg/5a9uz7SmSi0.jpg', 'type': 'm', 'width': 130}, {'height': 98, 'url': 'https://sun1-15.userapi.com/4iBaE5u3ZYKC3FDka3opZjxhvhNkdBbKErlXEQ/rzQw0vP_K1Y.jpg', 'type': 'o', 'width': 130}, {'height': 150, 'url': 'https://sun1-16.userapi.com/_PjjspFqqpyIlNOkRqL_J08M-j5x_QCCjTy1PQ/Hl-lwjBxOkI.jpg', 'type': 'p', 'width': 200}, {'height': 240, 'url': 'https://sun1-92.userapi.com/EgJkBWeV-44ZHFGoMTWZZBKS5-2d3_DQBEj3bQ/gZyym84IT4o.jpg', 'type': 'q', 'width': 320}, {'height': 383, 'url': 'https://sun1-85.userapi.com/H2Ze2Q8N_3wpvuaS5ThrY7yTPZNcr2p1FOwoJQ/7x5fJJKX7gg.jpg', 'type': 'r', 'width': 510}, {'height': 56, 'url': 'https://sun1-94.userapi.com/HsSd5C7o4nt31Vhgmv6av_DyU0cu38p9bplq3Q/-mc450EvpNE.jpg', 'type': 's', 'width': 75}, {'height': 1560, 'url': 'https://sun1-14.userapi.com/SjMmKfqIzmbiP1jmmS2NbqAyPUBypEJ8S-Qbhw/nNvfpaISG4c.jpg', 'type': 'w', 'width': 2080}, {'height': 453, 'url': 'https://sun1-27.userapi.com/TsyQKcEZ7ahEdY-QwMIdh3YKDaEVvCNak9kNhQ/Q6mRGULnw7Q.jpg', 'type': 'x', 'width': 604}, {'height': 605, 'url': 'https://sun1-18.userapi.com/oPqHQsGOYdraaVDrbfa3_4x32OSKdSd__LnI7g/PB40J_khUjA.jpg', 'type': 'y', 'width': 807}, {'height': 960, 'url': 'https://sun1-14.userapi.com/10UTHRlg2wf_0MW8DNXHs3CbgBpGxCb7E3LhBw/kRK-3EXWx1s.jpg', 'type': 'z', 'width': 1280}], 'text': '', 'user_id': 347644896}}, {'type': 'photo', 'photo': {'album_id': -8, 'date': 1592633123, 'id': 457315111, 'owner_id': -109125816, 'has_tags': False, 'access_key': '886f9a4b232292a8c3', 'lat': 55.723702, 'long': 38.037697, 'sizes': [{'height': 97, 'url': 'https://sun1-18.userapi.com/DTJ4vVs_fCedrd3-7QT4GdVzUwo1Z4ZEP7j2sA/BdSm6kJqYMc.jpg', 'type': 'm', 'width': 130}, {'height': 98, 'url': 'https://sun1-96.userapi.com/QfufGLw1naGO3fVFUm7bguuIwNwziB_sDu-Usg/nd_1dRGczVo.jpg', 'type': 'o', 'width': 130}, {'height': 150, 'url': 'https://sun1-23.userapi.com/zdq07lVkzTKqHHeEg5LEYmN04nkFTrstZOwZEg/-69xrJ0kOR8.jpg', 'type': 'p', 'width': 200}, {'height': 240, 'url': 'https://sun1-30.userapi.com/i5-r6VVuqmg-uXcRRNuXHWYo9MYsjFexgyF-tg/cnhP4Md5K78.jpg', 'type': 'q', 'width': 320}, {'height': 383, 'url': 'https://sun1-23.userapi.com/TIqNfkZ6gmgtJNwMunmwla3wRr2e-SxpeNfX_A/kypz8Y9iqgw.jpg', 'type': 'r', 'width': 510}, {'height': 56, 'url': 'https://sun1-20.userapi.com/L1tgkpb2aWd05-iTQnqBpvrIceBQyTcefsxUKg/JeKwo5FAS5E.jpg', 'type': 's', 'width': 75}, {'height': 1560, 'url': 'https://sun1-93.userapi.com/rJHmnXNm55vVTh9fY6YRYoiCgrWVkrvMdkl7-g/g_XEDc1RHWE.jpg', 'type': 'w', 'width': 2080}, {'height': 453, 'url': 'https://sun1-93.userapi.com/ewOIlSpwtmoW3f9vhcS5spCI04obg0O3tcsypw/7pKUIEQpyPQ.jpg', 'type': 'x', 'width': 604}, {'height': 605, 'url': 'https://sun1-87.userapi.com/eY78hL1Fa5uSRXbKd1qX1iuU7x5Tvj5l8aWsxg/nUT6h-5NIm4.jpg', 'type': 'y', 'width': 807}, {'height': 960, 'url': 'https://sun1-29.userapi.com/mYxT_qMtW0u4zNvVOsk29ceJkibIiNz1u2daLg/9QBmtUbM7lo.jpg', 'type': 'z', 'width': 1280}], 'text': '', 'user_id': 347644896}}], 'post_source': {'type': 'api', 'platform': 'android'}, 'comments': {'count': 0, 'can_post': 1, 'groups_can_post': True}, 'likes': {'count': 0, 'user_likes': 0, 'can_like': 1, 'can_publish': 0}, 'reposts': {'count': 0, 'user_reposted': 0}}]}
+    for k in range(n):
+        text = mesaage['items'][k]['text']
+        user = mesaage['items'][k]['from_id']
+        time = str(datetime.datetime.fromtimestamp((mesaage['items'][k]['date'])))
+        mes_id = mesaage['items'][k]['id']
+        date.update({mes_id : [text,user,time]})
+    return (date)
+
+def get_location(text_block):
+    req = requests.get('https://geocode-maps.yandex.ru/1.x/?apikey=f126a731-1fbb-43a6-a37e-abd3ae98bfa5&geocode='+text_block+'&lang=en_US')
+    soup = Bs(req.text, 'html.parser')
+    pos = soup.find_all('pos')
+    pos = pos[0].get_text()
+    pos = pos.split()
+    N = pos[1]
+    S = pos[0]
+    return (N,S)
+
+
+if __name__ == "__main__":
+    token = "8bb775448bb775448bb77544b18bc5c4a488bb78bb77544d55ae9c13037927a7f5eb3e0"  # Сервисный ключ доступа
+    session = vk.Session(access_token=token)  # Авторизация
+    vk_api = vk.API(session)
+    group = "-109125816"
+    n = 100
+    mesaages = get_message(group, n)
+    # mesaages = {520257: ['Санкт-Петербург, Богатырский пр-кт 9', 7414182, '2020-06-20 13:37:19'], 520254: ['М. О. Химки. Отдам. Хлеб свежий. Мука в среднем до 01.20. Бородинский до 03.18.Пишите в лс, пожалуйста.', 521161517, '2020-06-20 13:15:23'], 520238: ['Москва\nОчень много хлеба разного,девать некуда,кому нужно пишите в ЛС или звоните по номеру 8-926-175-18-53 Ирина\nМожайский район,ул Вяземская', 275085437, '2020-06-20 12:42:17'], 520221: ['ЗАБРАЛИ\nСПб м.Петроградская\nПП не зашло\nотдам тому, кто уже пробовал продукцию данной фирмы и привык ко вкусу сах.зама', 221450385, '2020-06-20 12:25:04'], 520204: ['Добрый день. \nМ. Водный стадион или м.Волоколамская\nЕсть 34 упаковки сливок для кофе порционных. Срок годности до 19.06.2020, но они не кислые, не тухлые.\nИ 2 пачки молока Пармалат, срок до 22.06.2020.\nЗабрать до 21.00 можно на м.Водныц стадион, после 21.00 на м. Волоколамская\nВ ЛИЧКУ НЕ ПИШЕМ, ТОЛЬКО ПОД ПОСТОМ.', 2764910, '2020-06-20 11:58:35'], 520187: ['#тхб_фудшеринг\n#спб_фш_хлеб\nЦентральный район\nНевский 147 || пл. Александра Невского\n\nОТДАНО \nЗабрали\n[id2331719|Elena]  [id138528124|Gennady] [id4326747|Olechka] \n\nВ меню хорошие наборы хлеба от некоторого партнёра, пожелавшего остаться анонимным.\n\nТрем спасателям бесконтактно\n\nЗапись в комментариях под этим постом. В ЛС ПИСАТЬ НЕТ СМЫСЛА.\n\nЗабирать сегодня в любое время у меня дома. Живу на 8 этаже без лифта. \n\nФейкам и закрытым безымянным свежерегам не отдаю. Убедитесь, что вам в лс можно написать сообщение с инструкцией забора', 373502, '2020-06-20 11:35:53'], 520179: ['Бронь. \nДобрый день\nМосква, м. Стахановская\nКартошка проросла и немного мягкая', 182966851, '2020-06-20 11:19:21'], 520177: ['Все забрали, спасибо!\n\n#Спб\nПривет! \nС доставки остался имбирь и васаби, все сроки в норме, количество на фото! Также есть бабушкино варенье, к сожалению, не понимаем из чего оно) по виду- вероятно черная смородина, но это не точно. Банка с надписью "желе" тоже не идентифицируется. Зелёная банка- это чеснок.\nЗабирать на пр. Ветеранов, самовывоз, связь в ЛС, пожалуйста, комментарии не отслежу!', 1637373, '2020-06-20 11:17:43'], 520176: ['СПб, с софийской базы\nРаздача Турку 22-1к.\nЗАКОНЧИЛА\n\nСвекла поехала раздаваться на Я.Гашека 10/85\n89112288018 \n\nМорковь забрали\nОгурцы 1-2\nКабачки 1\nЛук-порей 1-2\nУкроп/кинза забрали\nМанго забрали\nМандарины забрали\nЯблоки на 1-2\nАвокадо -забрали\nАнанасы забрали\nСвекла много!!!\n\nСпасибо, за пирожки! \nМеня тоже покормили))', 5745798, '2020-06-20 11:13:59'], 520151: ['Поделюсь шампиньонами замороженными 2 пакета. Балашиха деревня Пуршево улица Новослободская 12', 347644896, '2020-06-20 09:05:23']}
+    i = 0
+    k = 0
+    for keys, value in date.items():
+        text = value[0]
+        i += 1
+        print('\b')
+        print(text)
+
+        try:
+            N, S = get_location(text)
+            print(N + " " + S)
+            k += 1
+        except:
+            print("не удалось обнаружить адрес")
+
+
+    print('Процент успеха = ' + str(k/i*100) + '%')
